@@ -19,7 +19,7 @@ This terraform provider allows to perform Create ,Read ,Update, Delete, Import a
 1. Go to [Zoom Marketplace](https://marketplace.zoom.us/)<br>
 2. Click on `Build App`. For our purpose we need to make a JWT App. <br>
 3. Follow this [Create JWT Zoom App](https://marketplace.zoom.us/docs/guides/build/jwt-app) website to make an app. <br>
-4. This app will provide us with the zoom_api_secret, zoom_api_key, and ZOOM_TOEKN which will be needed to configure our provider and make request. <br>
+4. This app will provide us with the zoom_api_secret, zoom_api_key, and ZOOM_TOKEN which will be needed to configure our provider and make request. <br>
 
 
 ## Building the Provider
@@ -74,7 +74,7 @@ For eg. `mkdir -p %APPDATA%/terraform.d/plugins/hashicorp.com/edu/zoom/0.2.0/win
 1. Update the data of the user in the `resource` block as show in [example usage](#example-usage) and run the basic terraform commands to update user. 
    User is not allowed to update `email`.
    
-2. Update the `status` of User from `active` to `deactivate` or viceversa and run the basic terraform commands.
+2. Update the `status` of User from `active` to `inactive` or viceversa and run the basic terraform commands.
 
 ### Read the User Data
 Add `data` and `output` blocks as shown in the [example usage](#example-usage) and run the basic terraform commands.
@@ -132,13 +132,13 @@ output "user1" {
 * `email`(Required,string)            - The email id associated with the user account.
 * `first_name`(Required,string)       - First name of the User.
 * `last_name`(Required,string)        - Last Name / Family Name / Surname of the User.
-* `status`(Optional,string)           - User account activation status ie.(active,inactive).
+* `status`(Optional,string)           - User account activation status ie.(active, inactive).
 * `license_type`(Required,integer)    - User account type ie.(1=Basic, 2=License, 3=On-prem)
 * `job_title`(Optional,string)        - Job title of the particular user.
 * `department`(Optional,string)       - Department of the particular user.
 * `location`(Optional,string)         - Department of the particular user.
 * `id`(Computed,string)               - Unique ID of the User which is same as Email ID.
-* `pmi`(Computed,integer)             - Generated pmi no of the user.
+* `pmi`(Computed,integer)             - Generated pmi number of the user.
 * `role_name`(Computed,string)        - Current role of the user ie.(Admin,Member).
 
 
