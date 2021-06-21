@@ -261,7 +261,7 @@ func (c *Client) DeactivateUser(userId string, status string) error {
 
 func (c *Client) IsRetry(err error) bool {
 	if err != nil {
-		if strings.Contains(err.Error(), "\"StatusCode\":429")==true {
+		if strings.Contains(err.Error(), "429")==true {
 			return true
 		}
 	}
