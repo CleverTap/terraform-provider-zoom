@@ -94,7 +94,7 @@ Delete the `resource` block of the user and run `terraform apply`.
 terraform {
   required_providers {
     zoom = {
-      version = "1.0.1"
+      version = "1.0.3"
       source  = "CleverTap/zoom"
     }
   }
@@ -106,7 +106,7 @@ provider "zoom" {
 }
 
 resource "zoom_user" "user1" {
-   email      = "user@domain.com"
+   email      = "useremail@domain.com"
    first_name = "Dummyfirst"
    last_name  = "Dummylast"
    status = "active"
