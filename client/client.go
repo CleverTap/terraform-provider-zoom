@@ -119,9 +119,9 @@ func (c *Client) httpRequest(method string, body bytes.Buffer, item *User) (clos
 	err = json.Unmarshal([]byte(newbody), &data)
 	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
 		return resp.Body, nil
-    } else {
+    	} else {
 		return nil, fmt.Errorf("Error : %v",data["message"] )
-    }
+    	}
 }
 
 func (c *Client) GetItem(name string) (*User, error) {
@@ -208,9 +208,9 @@ func (c *Client) updatehttpRequest(path,method string, body bytes.Buffer, item *
 	err = json.Unmarshal([]byte(newbody), &data)
 	if resp.StatusCode >= 200 && resp.StatusCode <= 400 {
 		return resp.Body, nil
-    } else {
+    	} else {
 		return nil, fmt.Errorf("Error : %v",data["message"] )
-    }
+    	}
 	return resp.Body, nil
 }
 
@@ -241,10 +241,10 @@ func (c *Client) deletehttpRequest(path, method string, body bytes.Buffer) (clos
 	err = json.Unmarshal([]byte(newbody), &data)
 	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
 		return resp.Body, nil
-    } else {
+    	} else {
 		log.Println("Broken Request")
 		return nil, fmt.Errorf("Error : %v",data["message"])
-    }
+    	}
 }
 
 func (c *Client) DeactivateUser(userId string, status string) error {
@@ -267,10 +267,10 @@ func (c *Client) DeactivateUser(userId string, status string) error {
 	}
 	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
 		return nil
-    } else {
+    	} else {
 		log.Println("[DEACTIVATE/ACTIVATE ERROR]: ",Errors[resp.StatusCode])
 		return nil
-    }
+    	}
 }
 
 func (c *Client) IsRetry(err error) bool {
