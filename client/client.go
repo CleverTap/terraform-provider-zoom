@@ -157,7 +157,7 @@ func (c *Client) gethttpRequest(emailid, method string, body bytes.Buffer) (clos
 		respBody := new(bytes.Buffer)
 		_, err := respBody.ReadFrom(resp.Body)
 		if err != nil {
-			return nil, fmt.Errorf("Error : %v",Errors[resp.StatusCode] )
+			return nil, fmt.Errorf("Error : %v",err )
 		}
 		return nil, fmt.Errorf("Error : %v ", Errors[resp.StatusCode])
 	}
