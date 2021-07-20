@@ -1,4 +1,4 @@
-This terraform provider allows to perform Create ,Read ,Update, Delete, Import and Deactivate Zoom User(s). 
+This terraform provider allows to perform Create ,Read ,Update, Delete, Import and Deactivate Zoom Users. 
 
 ## Requirements
 
