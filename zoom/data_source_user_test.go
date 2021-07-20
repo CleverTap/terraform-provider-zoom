@@ -15,7 +15,7 @@ func TestAccUserDataSource_basic(t *testing.T) {
 				Config: testAccUserDataSourceConfig(),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(
-						"data.zoom_user.user5", "id", "ui17ec38@iiitsurat.ac.in"),
+						"data.zoom_user.user1", "id", "user@gmail.com"),
 				),
 			},
 		},
@@ -24,14 +24,14 @@ func TestAccUserDataSource_basic(t *testing.T) {
 
 func testAccUserDataSourceConfig() string {
 	return fmt.Sprintf(`	  
-	resource "zoom_user" "user5" {
-		email        = "ui17co15@iitsurat.ac.in"
-		first_name   = "ekansh"
-		last_name    = "singh"
+	resource "zoom_user" "user1" {
+		email        = "user@gmail.com"
+		first_name   = "FirstName"
+		last_name    = "LastName"
 		license_type =  1
 	  }
-	data "zoom_user" "user5" {
-		id = "ui17ec38@iiitsurat.ac.in"
+	data "zoom_user" "user1" {
+		id = "user@gmail.com"
 	}
 	`)
 }
