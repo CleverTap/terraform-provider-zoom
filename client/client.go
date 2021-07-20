@@ -153,16 +153,13 @@ func (c *Client) gethttpRequest(emailid, method string, body bytes.Buffer) (clos
 		log.Println("[ERROR]: ",err)
 		return nil, err
 	}
-	var data map[string]interface{}
-	newbody, err := ioutil.ReadAll(resp.Body)
-	err = json.Unmarshal([]byte(newbody), &data)
 	if resp.StatusCode != http.StatusOK {
 		respBody := new(bytes.Buffer)
 		_, err := respBody.ReadFrom(resp.Body)
 		if err != nil {
 			return nil, fmt.Errorf("Error : %v",err )
 		}
-		return nil, fmt.Errorf("Error : %v ", data["message"])
+		return nil, fmt.Errorf("Error : %v ", Errors[resp.StatusCode])
 	}
 	return resp.Body, nil
 }
@@ -268,13 +265,10 @@ func (c *Client) DeactivateUser(userId string, status string) error {
 		log.Println("[DEACTIVATE/ACTIVATE ERROR]: ",err)
 		return nil
 	}
-	var info map[string]interface{}
-	newbody, err := ioutil.ReadAll(resp.Body)
-	err = json.Unmarshal([]byte(newbody), &data)
 	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
 		return nil
     	} else {
-		log.Println("[DEACTIVATE/ACTIVATE ERROR]: ",info["message"])
+		log.Println("[DEACTIVATE/ACTIVATE ERROR]: ",Errors[resp.StatusCode])
 		return nil
     	}
 }
