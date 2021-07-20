@@ -153,13 +153,16 @@ func (c *Client) gethttpRequest(emailid, method string, body bytes.Buffer) (clos
 		log.Println("[ERROR]: ",err)
 		return nil, err
 	}
+	var data map[string]interface{}
+	newbody, err := ioutil.ReadAll(resp.Body)
+	err = json.Unmarshal([]byte(newbody), &data)
 	if resp.StatusCode != http.StatusOK {
 		respBody := new(bytes.Buffer)
 		_, err := respBody.ReadFrom(resp.Body)
 		if err != nil {
 			return nil, fmt.Errorf("Error : %v",err )
 		}
-		return nil, fmt.Errorf("Error : %v ", Errors[resp.StatusCode])
+		return nil, fmt.Errorf("Error : %v ", data["message"])
 	}
 	return resp.Body, nil
 }
