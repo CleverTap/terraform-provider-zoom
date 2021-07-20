@@ -114,14 +114,22 @@ func (c *Client) httpRequest(method string, body bytes.Buffer, item *User) (clos
 		log.Println("[ERROR]: ",err)
 		return nil, err
 	}
-	var data map[string]interface{}
-	newbody, err := ioutil.ReadAll(resp.Body)
-	err = json.Unmarshal([]byte(newbody), &data)
 	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
 		return resp.Body, nil
-    	} else {
+    } else {
+		var data map[string]interface{}
+		newbody, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Println("[ERROR]: ",err)
+			return nil, err
+		}
+		err = json.Unmarshal([]byte(newbody), &data)
+		if err != nil {
+			log.Println("[ERROR]: ",err)
+			return nil, err
+		}
 		return nil, fmt.Errorf("Error : %v",data["message"] )
-    	}
+    }
 }
 
 func (c *Client) GetItem(name string) (*User, error) {
@@ -153,15 +161,23 @@ func (c *Client) gethttpRequest(emailid, method string, body bytes.Buffer) (clos
 		log.Println("[ERROR]: ",err)
 		return nil, err
 	}
-	if resp.StatusCode != http.StatusOK {
-		respBody := new(bytes.Buffer)
-		_, err := respBody.ReadFrom(resp.Body)
+	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
+		return resp.Body, nil
+	} else {
+		var data map[string]interface{}
+		newbody, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			return nil, fmt.Errorf("Error : %v",err )
+			log.Println("[ERROR]: ",err)
+			return nil, err
 		}
-		return nil, fmt.Errorf("Error : %v ", Errors[resp.StatusCode])
+		err = json.Unmarshal([]byte(newbody), &data)
+		if err != nil {
+			log.Println("[ERROR]: ",err)
+			return nil, err
+		}
+		log.Println("Broken Request")
+		return nil, fmt.Errorf("ERROR : %v",data["message"])
 	}
-	return resp.Body, nil
 }
 
 func (c *Client) UpdateItem(item *User) error {
@@ -203,15 +219,23 @@ func (c *Client) updatehttpRequest(path,method string, body bytes.Buffer, item *
 		log.Println("[ERROR]: ", err)
 		return nil, err
 	}
-	var data map[string]interface{}
-	newbody, err := ioutil.ReadAll(resp.Body)
-	err = json.Unmarshal([]byte(newbody), &data)
 	if resp.StatusCode >= 200 && resp.StatusCode <= 400 {
 		return resp.Body, nil
-    	} else {
+    } else {
+		var data map[string]interface{}
+		newbody, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Println("[ERROR]: ",err)
+			return nil, err
+		}
+		err = json.Unmarshal([]byte(newbody), &data)
+		if err != nil {
+			log.Println("[ERROR]: ",err)
+			return nil, err
+		}
 		return nil, fmt.Errorf("Error : %v",data["message"] )
-    	}
-	return resp.Body, nil
+    }
+	
 }
 
 func (c *Client) DeleteItem(userId string) error {
@@ -236,15 +260,22 @@ func (c *Client) deletehttpRequest(path, method string, body bytes.Buffer) (clos
 		log.Println("[DELETE ERROR]: ", err)
 		return nil, err
 	}
-	var data map[string]interface{}
-	newbody, err := ioutil.ReadAll(resp.Body)
-	err = json.Unmarshal([]byte(newbody), &data)
 	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
 		return resp.Body, nil
-    	} else {
-		log.Println("Broken Request")
+    } else {
+		var data map[string]interface{}
+		newbody, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Println("[ERROR]: ",err)
+			return nil, err
+		}
+		err = json.Unmarshal([]byte(newbody), &data)
+		if err != nil {
+			log.Println("[ERROR]: ",err)
+			return nil, err
+		}
 		return nil, fmt.Errorf("Error : %v",data["message"])
-    	}
+    }
 }
 
 func (c *Client) DeactivateUser(userId string, status string) error {
@@ -265,15 +296,24 @@ func (c *Client) DeactivateUser(userId string, status string) error {
 		log.Println("[DEACTIVATE/ACTIVATE ERROR]: ",err)
 		return nil
 	}
-	var newdata map[string]interface{}
-	newbody, err := ioutil.ReadAll(resp.Body)
-	err = json.Unmarshal([]byte(newbody), &data)
 	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
 		return nil
-    	} else {
+    } else {
+		var newdata map[string]interface{}
+		newbody, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Println("[ERROR]: ",err)
+			return err
+		}
+		err = json.Unmarshal([]byte(newbody), &data)
+		if err != nil {
+			log.Println("[ERROR]: ",err)
+			return err
+		}
 		log.Println("[DEACTIVATE/ACTIVATE ERROR]")
 		return fmt.Errorf("Error : %v",newdata["message"])
-    	}
+    }
+	
 }
 
 func (c *Client) IsRetry(err error) bool {
