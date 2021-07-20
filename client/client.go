@@ -265,11 +265,14 @@ func (c *Client) DeactivateUser(userId string, status string) error {
 		log.Println("[DEACTIVATE/ACTIVATE ERROR]: ",err)
 		return nil
 	}
+	var newdata map[string]interface{}
+	newbody, err := ioutil.ReadAll(resp.Body)
+	err = json.Unmarshal([]byte(newbody), &data)
 	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
 		return nil
     	} else {
-		log.Println("[DEACTIVATE/ACTIVATE ERROR]: ",Errors[resp.StatusCode])
-		return nil
+		log.Println("[DEACTIVATE/ACTIVATE ERROR]")
+		return fmt.Errorf("Error : %v",newdata["message"])
     	}
 }
 
