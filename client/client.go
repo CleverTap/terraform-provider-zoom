@@ -128,7 +128,7 @@ func (c *Client) httpRequest(method string, body bytes.Buffer, item *User) (clos
 			log.Println("[ERROR]: ",err)
 			return nil, err
 		}
-		return nil, fmt.Errorf("Error : %v",data["message"] )
+		return nil, fmt.Errorf("%v, STATUSCODE = %v",data["message"],resp.StatusCode)
     }
 }
 
@@ -176,7 +176,7 @@ func (c *Client) gethttpRequest(emailid, method string, body bytes.Buffer) (clos
 			return nil, err
 		}
 		log.Println("Broken Request")
-		return nil, fmt.Errorf("ERROR : %v",data["message"])
+		return nil, fmt.Errorf("%v, STATUSCODE = %v",data["message"],resp.StatusCode)
 	}
 }
 
@@ -233,7 +233,7 @@ func (c *Client) updatehttpRequest(path,method string, body bytes.Buffer, item *
 			log.Println("[ERROR]: ",err)
 			return nil, err
 		}
-		return nil, fmt.Errorf("Error : %v",data["message"] )
+		return nil, fmt.Errorf("%v, STATUSCODE = %v",data["message"],resp.StatusCode)
     }
 	
 }
@@ -274,7 +274,7 @@ func (c *Client) deletehttpRequest(path, method string, body bytes.Buffer) (clos
 			log.Println("[ERROR]: ",err)
 			return nil, err
 		}
-		return nil, fmt.Errorf("Error : %v",data["message"])
+		return nil, fmt.Errorf("%v, STATUSCODE = %v",data["message"],resp.StatusCode)
     }
 }
 
@@ -311,7 +311,7 @@ func (c *Client) DeactivateUser(userId string, status string) error {
 			return err
 		}
 		log.Println("[DEACTIVATE/ACTIVATE ERROR]")
-		return fmt.Errorf("Error : %v",newdata["message"])
+		return fmt.Errorf("%v, STATUSCODE = %v",newdata["message"],resp.StatusCode)
     }
 	
 }
