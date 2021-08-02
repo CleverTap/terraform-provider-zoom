@@ -14,9 +14,9 @@ func TestAccItem_Basic(t *testing.T) {
 			{
 				Config: testAccCheckItemBasic(),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("zoom_user.user1", "email", "tapendrakmr639@gmail.com"),
-					resource.TestCheckResourceAttr("zoom_user.user1", "first_name", "Ekansh"),
-					resource.TestCheckResourceAttr("zoom_user.user1", "last_name", "Singh"),
+					resource.TestCheckResourceAttr("zoom_user.user1", "email", "user@gmail.com"),
+					resource.TestCheckResourceAttr("zoom_user.user1", "first_name", "FirstName"),
+					resource.TestCheckResourceAttr("zoom_user.user1", "last_name", "LastName"),
 				),
 			},
 		},
@@ -26,9 +26,9 @@ func TestAccItem_Basic(t *testing.T) {
 func testAccCheckItemBasic() string {
 	return fmt.Sprintf(`
 resource "zoom_user" "user1" {
-      email        = "tapendrakmr639@gmail.com"
-      first_name   = "Ekansh"
-      last_name    = "Singh"
+      email        = "user@gmail.com"
+      first_name   = "FirstName"
+      last_name    = "LastName"
       license_type =  1
     }
 `)
@@ -43,22 +43,22 @@ func TestAccItem_Update(t *testing.T) {
 				Config: testAccCheckItemUpdatePre(),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(
-						"zoom_user.user1", "email", "ekansh6336@gmail.com"),
+						"zoom_user.user1", "email", "user@gmail.com"),
 					resource.TestCheckResourceAttr(
-						"zoom_user.user1", "first_name", "Ekansh"),
+						"zoom_user.user1", "first_name", "FirstName"),
 					resource.TestCheckResourceAttr(
-						"zoom_user.user1", "last_name", "Singh"),	
+						"zoom_user.user1", "last_name", "LastName"),	
 				),
 			},
 			{
 				Config: testAccCheckItemUpdatePost(),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(
-						"zoom_user.user1", "email", "ekansh6336@gmail.com"),
+						"zoom_user.user1", "email", "user@gmail.com"),
 					resource.TestCheckResourceAttr(
-						"zoom_user.user1", "first_name", "Ekansh"),
+						"zoom_user.user1", "first_name", "FirstName"),
 					resource.TestCheckResourceAttr(
-						"zoom_user.user1", "last_name", "kumar"),
+						"zoom_user.user1", "last_name", "LastName"),
 				),
 			},
 		},
@@ -68,9 +68,9 @@ func TestAccItem_Update(t *testing.T) {
 func testAccCheckItemUpdatePre() string {
 	return fmt.Sprintf(`
 resource "zoom_user" "user1" {
-	email        = "ekansh6336@gmail.com"
-	first_name   = "Ekansh"
-	last_name    = "Singh"
+	email        = "user@gmail.com"
+	first_name   = "FirstName"
+	last_name    = "LastName"
 	status       = "activate"
 	license_type =  1
 }
@@ -80,9 +80,9 @@ resource "zoom_user" "user1" {
 func testAccCheckItemUpdatePost() string {
 	return fmt.Sprintf(`
 resource "zoom_user" "user1" {
-	email        = "ekansh6336@gmail.com"
-	first_name   = "Ekansh"
-	last_name    = "kumar"
+	email        = "user@gmail.com"
+	first_name   = "FirstName"
+	last_name    = "LastName"
 	status       = "activate"
 	license_type =  1
 }

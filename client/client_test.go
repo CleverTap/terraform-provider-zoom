@@ -4,17 +4,11 @@ import(
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"os"
-	"io/ioutil"
 	"log"
 )
 
 func init(){
-	file, err := os.Open("../acctoken.txt")
-    if err != nil {
-        log.Fatal(err)
-    }
-	token, err := ioutil.ReadAll(file)
-	os.Setenv("ZOOM_TOKEN", string(token))
+	os.Setenv("ZOOM_TOKEN", "DEMOVALUE")
 }
 
 func TestClient_GetItem(t *testing.T) {
@@ -27,13 +21,13 @@ func TestClient_GetItem(t *testing.T) {
 	}{
 		{
 			testName: "user exists",
-			itemName: "ravikishandaiya@gmail.com",
+			itemName: "user@gmail.com",
 			seedData: map[string]User{
-				"ravikishandaiya@gmail.com": {
+				"user@gmail.com": {
 					Id:        	"oJ8qBrheQ4KJ6qozaa4QhA",
-					Email:   	"ravikishandaiya@gmail.com",
-					FirstName: 	"Ravi",
-					LastName:  	"Kishan",
+					Email:   	"user@gmail.com",
+					FirstName: 	"FirstName",
+					LastName:  	"LastName",
 					Type:      	1,
 					Pmi:		6730446034,
 					RoleName:    	"Member",
@@ -46,9 +40,9 @@ func TestClient_GetItem(t *testing.T) {
 			expectErr: false,
 			expectedResp: &User{
 				Id:        	"oJ8qBrheQ4KJ6qozaa4QhA",
-				Email:   	"ravikishandaiya@gmail.com",
-				FirstName: 	"Ravi",
-				LastName:  	"Kishan",
+				Email:   	"user@gmail.com",
+				FirstName: 	"FirstName",
+				LastName:  	"LastName",
 				Type:      	1,
 				Pmi:		6730446034,
 				RoleName:    	"Member",
@@ -61,7 +55,7 @@ func TestClient_GetItem(t *testing.T) {
 		
 		{
 			testName:     "user does not exist",
-			itemName:     "ui17co14@itsurat.ac.in",
+			itemName:     "user@gmail.com",
 			seedData:     nil,
 			expectErr:    true,
 			expectedResp: nil,
@@ -71,7 +65,6 @@ func TestClient_GetItem(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.testName, func(t *testing.T) {
 			client := NewClient(os.Getenv("ZOOM_TOKEN"))
-
 			item, err := client.GetItem(tc.itemName)
 			if tc.expectErr {
 				assert.Error(t, err)
@@ -94,9 +87,9 @@ func TestClient_NewItem(t *testing.T) {
 			testName: "user creation successful",
 			newItem: &User{
 				Id:        	"oJ8qBrheQ4KJ6qozaa4QhA",
-				Email:   	"ravikishandaiya@gmail.com",
-				FirstName: 	"Ravi",
-				LastName:  	"Kishan",
+				Email:   	"user@gmail.com",
+				FirstName: 	"FirstName",
+				LastName:  	"LastName",
 				Type:      	1,
 				Pmi:		6730446034,
 				RoleName:    	"Member",
@@ -112,9 +105,9 @@ func TestClient_NewItem(t *testing.T) {
 			testName: "item already exists",
 			newItem: &User{
 				Id:        	"oJ8qBrheQ4KJ6qozaa4QhA",
-				Email:   	"ravikishandaiya@gmail.com",
-				FirstName: 	"Ravi",
-				LastName:  	"Kishan",
+				Email:   	"user@gmail.com",
+				FirstName: 	"FirstName",
+				LastName:  	"LastName",
 				Type:      	1,
 				Pmi:		6730446034,
 				RoleName:    	"Member",
@@ -126,9 +119,9 @@ func TestClient_NewItem(t *testing.T) {
 			seedData: map[string]User{
 				"item1": {
 					Id:        	"oJ8qBrheQ4KJ6qozaa4QhA",
-					Email:   	"ravikishandaiya@gmail.com",
-					FirstName: 	"Ravi",
-					LastName:  	"Kishan",
+					Email:   	"user@gmail.com",
+					FirstName: 	"FirstName",
+					LastName:  	"LastName",
 					Type:      	1,
 					Pmi:		6730446034,
 					RoleName:    	"Member",
@@ -146,8 +139,6 @@ func TestClient_NewItem(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.testName, func(t *testing.T) {
 			client := NewClient(os.Getenv("ZOOM_TOKEN"))
-
-
 			err := client.NewItem(tc.newItem)
 			if tc.expectErr {
 				assert.Error(t, err)
@@ -171,9 +162,9 @@ func TestClient_UpdateItem(t *testing.T) {
 			testName: "item exists",
 			updatedItem: &User{
 				Id:        	"oJ8qBrheQ4KJ6qozaa4QhA",
-				Email:   	"ravikishandaiya@gmail.com",
-				FirstName: 	"Ravi",
-				LastName:  	"Kishan",
+				Email:   	"user@gmail.com",
+				FirstName: 	"FirstName",
+				LastName:  	"LastName",
 				Type:      	1,
 				Pmi:		6730446034,
 				RoleName:    	"Member",
@@ -185,9 +176,9 @@ func TestClient_UpdateItem(t *testing.T) {
 			seedData: map[string]User{
 				"item1": {
 					Id:        	"oJ8qBrheQ4KJ6qozaa4QhA",
-					Email:   	"ravikishandaiya@gmail.com",
-					FirstName: 	"Ravi",
-					LastName:  	"Kishan",
+					Email:   	"user@gmail.com,
+					FirstName: 	"FirstName",
+					LastName:  	"LastName",
 					Type:      	1,
 					Pmi:		6730446034,
 					RoleName:    	"Member",
@@ -203,9 +194,9 @@ func TestClient_UpdateItem(t *testing.T) {
 			testName: "item does not exist",
 			updatedItem: &User{
 				Id :       	"dfhjjddfjsd",
-				Email:     	"ui17ec38@iitsurat.ac.in",
-				FirstName: 	"ekansh",
-				LastName:  	"rock",
+				Email:     	"user@gmail.com",
+				FirstName: 	"FirstName",
+				LastName:  	"LastName",
 				Type:      	1,
 				RoleName:  	"Member",
 				Status  :  	"active",
@@ -242,13 +233,13 @@ func TestClient_DeleteItem(t *testing.T) {
 	}{
 		{
 			testName: "user exists",
-			itemName: "ui17co14@iiitsurat.ac.in",
+			itemName: "user@gmail.com",
 			seedData: map[string]User{
 				"user1": {
 					Id:        	"t2OUx6lvTMedrAiW2ffURA",
-					Email:   	"ui17co14@iiitsurat.ac.in",
-					FirstName:	"ekansh",
-					LastName:  	"singh",
+					Email:   	"user@gmail.com",
+					FirstName:	"FirstName",
+					LastName:  	"LastName",
 					Type:        	1,
 					RoleName:    	"Member",
 					Status  :    	"active",

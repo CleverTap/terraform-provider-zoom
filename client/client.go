@@ -64,10 +64,6 @@ type Client struct {
 }
 
 func NewClient(token string) *Client {
-	err := ioutil.WriteFile("acctoken.txt", []byte(token), 0644)
-    if err != nil {
-        panic(err)
-    }
 	return &Client{
 		authToken:  token,
 		httpClient: &http.Client{},
@@ -117,7 +113,18 @@ func (c *Client) httpRequest(method string, body bytes.Buffer, item *User) (clos
 	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
 		return resp.Body, nil
     } else {
-		return nil, fmt.Errorf("Error : %v",Errors[resp.StatusCode] )
+		var data map[string]interface{}
+		newbody, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Println("[ERROR]: ",err)
+			return nil, err
+		}
+		err = json.Unmarshal([]byte(newbody), &data)
+		if err != nil {
+			log.Println("[ERROR]: ",err)
+			return nil, err
+		}
+		return nil, fmt.Errorf("%v, STATUSCODE = %v",data["message"],resp.StatusCode)
     }
 }
 
@@ -150,15 +157,23 @@ func (c *Client) gethttpRequest(emailid, method string, body bytes.Buffer) (clos
 		log.Println("[ERROR]: ",err)
 		return nil, err
 	}
-	if resp.StatusCode != http.StatusOK {
-		respBody := new(bytes.Buffer)
-		_, err := respBody.ReadFrom(resp.Body)
+	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
+		return resp.Body, nil
+	} else {
+		var data map[string]interface{}
+		newbody, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			return nil, fmt.Errorf("Error : %v",Errors[resp.StatusCode] )
+			log.Println("[ERROR]: ",err)
+			return nil, err
 		}
-		return nil, fmt.Errorf("Error : %v ", Errors[resp.StatusCode])
+		err = json.Unmarshal([]byte(newbody), &data)
+		if err != nil {
+			log.Println("[ERROR]: ",err)
+			return nil, err
+		}
+		log.Println("Broken Request")
+		return nil, fmt.Errorf("%v, STATUSCODE = %v",data["message"],resp.StatusCode)
 	}
-	return resp.Body, nil
 }
 
 func (c *Client) UpdateItem(item *User) error {
@@ -203,9 +218,20 @@ func (c *Client) updatehttpRequest(path,method string, body bytes.Buffer, item *
 	if resp.StatusCode >= 200 && resp.StatusCode <= 400 {
 		return resp.Body, nil
     } else {
-		return nil, fmt.Errorf("Error : %v",Errors[resp.StatusCode] )
+		var data map[string]interface{}
+		newbody, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Println("[ERROR]: ",err)
+			return nil, err
+		}
+		err = json.Unmarshal([]byte(newbody), &data)
+		if err != nil {
+			log.Println("[ERROR]: ",err)
+			return nil, err
+		}
+		return nil, fmt.Errorf("%v, STATUSCODE = %v",data["message"],resp.StatusCode)
     }
-	return resp.Body, nil
+	
 }
 
 func (c *Client) DeleteItem(userId string) error {
@@ -233,8 +259,18 @@ func (c *Client) deletehttpRequest(path, method string, body bytes.Buffer) (clos
 	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
 		return resp.Body, nil
     } else {
-		log.Println("Broken Request")
-		return nil, fmt.Errorf("Error : %v",Errors[resp.StatusCode] )
+		var data map[string]interface{}
+		newbody, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Println("[ERROR]: ",err)
+			return nil, err
+		}
+		err = json.Unmarshal([]byte(newbody), &data)
+		if err != nil {
+			log.Println("[ERROR]: ",err)
+			return nil, err
+		}
+		return nil, fmt.Errorf("%v, STATUSCODE = %v",data["message"],resp.StatusCode)
     }
 }
 
@@ -251,12 +287,29 @@ func (c *Client) DeactivateUser(userId string, status string) error {
 	authtoken := "Bearer "+c.authToken
 	req.Header.Add("content-type", "application/json")
 	req.Header.Add("authorization", authtoken)
-	_, err = c.httpClient.Do(req)
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		log.Println("[DEACTIVATE/ACTIVATE ERROR]: ",err)
 		return nil
 	}
-	return nil
+	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
+		return nil
+    } else {
+		var newdata map[string]interface{}
+		newbody, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Println("[ERROR]: ",err)
+			return err
+		}
+		err = json.Unmarshal([]byte(newbody), &data)
+		if err != nil {
+			log.Println("[ERROR]: ",err)
+			return err
+		}
+		log.Println("[DEACTIVATE/ACTIVATE ERROR]")
+		return fmt.Errorf("%v, STATUSCODE = %v",newdata["message"],resp.StatusCode)
+    }
+	
 }
 
 func (c *Client) IsRetry(err error) bool {

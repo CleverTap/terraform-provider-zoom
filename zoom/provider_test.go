@@ -5,20 +5,14 @@ import(
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"testing"
 	"log"
-	"io/ioutil"
-
 )
 
 var testAccProviders map[string]*schema.Provider
 var testAccProvider *schema.Provider
 
 func init() {
-	file, err := os.Open("../acctoken.txt")
-    if err != nil {
-        log.Fatal(err)
-    }
-	token, err := ioutil.ReadAll(file)
-	os.Setenv("ZOOM_TOKEN", string(token))
+	os.Setenv("ZOOM_API_SECRET", "DEMO_VALUE")
+	os.Setenv("ZOOM_API_KEY", "DEMO_VALUE")
 	testAccProvider = Provider()
 	testAccProviders = map[string]*schema.Provider{
 		"zoom": testAccProvider,
@@ -37,7 +31,10 @@ func TestProvider_impl(t *testing.T)  {
 }
 
 func testAccPreCheck(t *testing.T) {
-	if v := os.Getenv("ZOOM_TOKEN"); v == "" {
-		t.Fatal("ZOOM_TOKEN must be set for acceptance tests")
+	if v := os.Getenv("ZOOM_API_SECRET"); v == "" {
+		t.Fatal("ZOOM_API_SECRET must be set for acceptance tests")
+	}
+	if v := os.Getenv("ZOOM_API_KEY"); v == "" {
+		t.Fatal("ZOOM_API_KEY must be set for acceptance tests")
 	}
 }
