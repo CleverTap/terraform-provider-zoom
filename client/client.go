@@ -244,7 +244,7 @@ func (c *Client) DeleteItem(userId string) error {
 }
 
 func (c *Client) deletehttpRequest(path, method string, body bytes.Buffer) (closer io.ReadCloser, err error) {
-	req, err := http.NewRequest(method,fmt.Sprintf("%s/%s", "https://api.zoom.us/v2/users", path), &body)
+	req, err := http.NewRequest(method,fmt.Sprintf("%s/%s", "https://api.zoom.us/v2/users", path + "?action=\"delete\""), &body)
 	if err != nil {
 		log.Println("[DELETE ERROR]: ", err)
 		return nil, err
