@@ -46,10 +46,6 @@ type UpdateUser struct {
 	Location    string `json:"location"`
 }
 
-type DeleteUser struct {
-	Action string `json:"action"`
-}
-
 var (
     Errors = make(map[int]string)
 )
@@ -239,12 +235,7 @@ func (c *Client) updatehttpRequest(path,method string, body bytes.Buffer, item *
 }
 
 func (c *Client) DeleteItem(userId string) error {
-	userjson := DeleteUser{
-		Action: "delete",
-	}
-	reqjson, _ := json.Marshal(userjson)
-	payload := strings.NewReader(string(reqjson))
-	_, err := c.deletehttpRequest(fmt.Sprintf("%s", userId), "DELETE", payload)
+	_, err := c.deletehttpRequest(fmt.Sprintf("%s?action=delete", userId), "DELETE", bytes.Buffer{})
 	if err != nil {
 		log.Println("[DELETE ERROR]: ", err)
 		return err
@@ -252,8 +243,8 @@ func (c *Client) DeleteItem(userId string) error {
 	return nil
 }
 
-func (c *Client) deletehttpRequest(path, method string, body *strings.Reader) (closer io.ReadCloser, err error) {
-	req, err := http.NewRequest(method,fmt.Sprintf("%s/%s", "https://api.zoom.us/v2/users", path), body)
+func (c *Client) deletehttpRequest(path, method string, body bytes.Buffer) (closer io.ReadCloser, err error) {
+	req, err := http.NewRequest(method,fmt.Sprintf("%s/%s", "https://api.zoom.us/v2/users", path), &body)
 	if err != nil {
 		log.Println("[DELETE ERROR]: ", err)
 		return nil, err
