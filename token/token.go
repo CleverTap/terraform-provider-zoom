@@ -1,9 +1,9 @@
 package token
 
 import (
-	"time"
 	"github.com/dgrijalva/jwt-go"
 	"os"
+	"time"
 )
 
 type Claims struct {
@@ -38,6 +38,6 @@ func TokenGenerate(apiSecret string, apiKey string) string {
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, _ := token.SignedString(jwtKey)
-	os.Setenv("ZOOM_TOKEN",tokenString)
+	os.Setenv("ZOOM_TOKEN", tokenString)
 	return tokenString
 }

@@ -1,10 +1,10 @@
 package zoom
 
-import(
-	"os"
+import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"testing"
 	"log"
+	"os"
+	"testing"
 )
 
 var testAccProviders map[string]*schema.Provider
@@ -21,12 +21,12 @@ func init() {
 
 func TestProvider(t *testing.T) {
 	if err := Provider().InternalValidate(); err != nil {
-		log.Println("[ERROR]: ",err)
+		log.Println("[ERROR]: ", err)
 		t.Fatalf("err: %s", err)
 	}
 }
 
-func TestProvider_impl(t *testing.T)  {
+func TestProvider_impl(t *testing.T) {
 	var _ *schema.Provider = Provider()
 }
 

@@ -5,24 +5,24 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"strings"
-	"log"
-	"io/ioutil"
 )
 
 type User struct {
-	Id          string `json:"id"`
-	Email       string `json:"email"`
-	FirstName   string `json:"first_name"`
-	LastName    string `json:"last_name"`
-	Status      string  `json:"status"`
-	Type        int `json:"type"`
-	Pmi         int `json:"pmi"`
-	RoleName    string `json:"role_name"`
-	Department  string `json:"dept"`
-	JobTitle    string `json:"job_title"`
-	Location    string `json:"location"`
+	Id         string `json:"id"`
+	Email      string `json:"email"`
+	FirstName  string `json:"first_name"`
+	LastName   string `json:"last_name"`
+	Status     string `json:"status"`
+	Type       int    `json:"type"`
+	Pmi        int    `json:"pmi"`
+	RoleName   string `json:"role_name"`
+	Department string `json:"dept"`
+	JobTitle   string `json:"job_title"`
+	Location   string `json:"location"`
 }
 
 type NewUser struct {
@@ -38,16 +38,16 @@ type UserInfo struct {
 }
 
 type UpdateUser struct {
-	FirstName   string `json:"first_name"`
-	LastName    string `json:"last_name"`
-	Type        int `json:"type"`
-	Department  string `json:"dept"`
-	JobTitle    string `json:"job_title"`
-	Location    string `json:"location"`
+	FirstName  string `json:"first_name"`
+	LastName   string `json:"last_name"`
+	Type       int    `json:"type"`
+	Department string `json:"dept"`
+	JobTitle   string `json:"job_title"`
+	Location   string `json:"location"`
 }
 
 var (
-    Errors = make(map[int]string)
+	Errors = make(map[int]string)
 )
 
 func init() {
@@ -89,8 +89,8 @@ func (c *Client) httpRequest(method string, body bytes.Buffer, item *User) (clos
 	userjson := NewUser{
 		Action: "create",
 		UserInfo: UserInfo{
-			Email:   item.Email,
-			Type:    item.Type,
+			Email:     item.Email,
+			Type:      item.Type,
 			FirstName: item.FirstName,
 			LastName:  item.LastName,
 		},
@@ -98,34 +98,34 @@ func (c *Client) httpRequest(method string, body bytes.Buffer, item *User) (clos
 	reqjson, _ := json.Marshal(userjson)
 	payload := strings.NewReader(string(reqjson))
 	req, err := http.NewRequest(method, fmt.Sprintf("%s?access_token=%s", "https://api.zoom.us/v2/users", c.authToken), payload)
-	authtoken := "Bearer "+c.authToken
+	authtoken := "Bearer " + c.authToken
 	req.Header.Add("Authorization", authtoken)
 	req.Header.Add("Content-Type", "application/json")
 	if err != nil {
-		log.Println("[ERROR]: ",err)
+		log.Println("[ERROR]: ", err)
 		return nil, err
 	}
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		log.Println("[ERROR]: ",err)
+		log.Println("[ERROR]: ", err)
 		return nil, err
 	}
 	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
 		return resp.Body, nil
-    } else {
+	} else {
 		var data map[string]interface{}
 		newbody, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			log.Println("[ERROR]: ",err)
+			log.Println("[ERROR]: ", err)
 			return nil, err
 		}
 		err = json.Unmarshal([]byte(newbody), &data)
 		if err != nil {
-			log.Println("[ERROR]: ",err)
+			log.Println("[ERROR]: ", err)
 			return nil, err
 		}
-		return nil, fmt.Errorf("%v, STATUSCODE = %v",data["message"],resp.StatusCode)
-    }
+		return nil, fmt.Errorf("%v, STATUSCODE = %v", data["message"], resp.StatusCode)
+	}
 }
 
 func (c *Client) GetItem(name string) (*User, error) {
@@ -149,12 +149,12 @@ func (c *Client) gethttpRequest(emailid, method string, body bytes.Buffer) (clos
 		log.Println("[ERROR]: ", err)
 		return nil, err
 	}
-	authtoken := "Bearer "+c.authToken
+	authtoken := "Bearer " + c.authToken
 	req.Header.Add("Authorization", authtoken)
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Println("[ERROR]: ",err)
+		log.Println("[ERROR]: ", err)
 		return nil, err
 	}
 	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
@@ -163,16 +163,16 @@ func (c *Client) gethttpRequest(emailid, method string, body bytes.Buffer) (clos
 		var data map[string]interface{}
 		newbody, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			log.Println("[ERROR]: ",err)
+			log.Println("[ERROR]: ", err)
 			return nil, err
 		}
 		err = json.Unmarshal([]byte(newbody), &data)
 		if err != nil {
-			log.Println("[ERROR]: ",err)
+			log.Println("[ERROR]: ", err)
 			return nil, err
 		}
 		log.Println("Broken Request")
-		return nil, fmt.Errorf("%v, STATUSCODE = %v",data["message"],resp.StatusCode)
+		return nil, fmt.Errorf("%v, STATUSCODE = %v", data["message"], resp.StatusCode)
 	}
 }
 
@@ -183,7 +183,7 @@ func (c *Client) UpdateItem(item *User) error {
 		log.Println("[UPDATE ERROR]: ", err)
 		return err
 	}
-	_, err = c.updatehttpRequest(fmt.Sprintf("%s", item.Email), "PATCH", buf,item)
+	_, err = c.updatehttpRequest(fmt.Sprintf("%s", item.Email), "PATCH", buf, item)
 	if err != nil {
 		log.Println("[UPDATE ERROR]: ", err)
 		return err
@@ -191,19 +191,19 @@ func (c *Client) UpdateItem(item *User) error {
 	return nil
 }
 
-func (c *Client) updatehttpRequest(path,method string, body bytes.Buffer, item *User) (closer io.ReadCloser, err error) {
+func (c *Client) updatehttpRequest(path, method string, body bytes.Buffer, item *User) (closer io.ReadCloser, err error) {
 	updateuserjson := UpdateUser{
-		FirstName: item.FirstName,
-		LastName:  item.LastName,
-		Type:  item.Type,
+		FirstName:  item.FirstName,
+		LastName:   item.LastName,
+		Type:       item.Type,
 		Department: item.Department,
-		JobTitle:  item.JobTitle,
-		Location:  item.Location,
+		JobTitle:   item.JobTitle,
+		Location:   item.Location,
 	}
 	updatejson, _ := json.Marshal(updateuserjson)
 	payload := strings.NewReader(string(updatejson))
-	req, err := http.NewRequest(method, fmt.Sprintf("%s/%s","https://api.zoom.us/v2/users", path), payload)
-	authtoken := "Bearer "+c.authToken
+	req, err := http.NewRequest(method, fmt.Sprintf("%s/%s", "https://api.zoom.us/v2/users", path), payload)
+	authtoken := "Bearer " + c.authToken
 	req.Header.Add("Authorization", authtoken)
 	req.Header.Add("Content-Type", "application/json")
 	if err != nil {
@@ -217,21 +217,21 @@ func (c *Client) updatehttpRequest(path,method string, body bytes.Buffer, item *
 	}
 	if resp.StatusCode >= 200 && resp.StatusCode <= 400 {
 		return resp.Body, nil
-    } else {
+	} else {
 		var data map[string]interface{}
 		newbody, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			log.Println("[ERROR]: ",err)
+			log.Println("[ERROR]: ", err)
 			return nil, err
 		}
 		err = json.Unmarshal([]byte(newbody), &data)
 		if err != nil {
-			log.Println("[ERROR]: ",err)
+			log.Println("[ERROR]: ", err)
 			return nil, err
 		}
-		return nil, fmt.Errorf("%v, STATUSCODE = %v",data["message"],resp.StatusCode)
-    }
-	
+		return nil, fmt.Errorf("%v, STATUSCODE = %v", data["message"], resp.StatusCode)
+	}
+
 }
 
 func (c *Client) DeleteItem(userId string) error {
@@ -244,12 +244,12 @@ func (c *Client) DeleteItem(userId string) error {
 }
 
 func (c *Client) deletehttpRequest(path, method string, body bytes.Buffer) (closer io.ReadCloser, err error) {
-	req, err := http.NewRequest(method,fmt.Sprintf("%s/%s", "https://api.zoom.us/v2/users", path), &body)
+	req, err := http.NewRequest(method, fmt.Sprintf("%s/%s", "https://api.zoom.us/v2/users", path), &body)
 	if err != nil {
 		log.Println("[DELETE ERROR]: ", err)
 		return nil, err
 	}
-	authtoken := "Bearer "+c.authToken
+	authtoken := "Bearer " + c.authToken
 	req.Header.Add("Authorization", authtoken)
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
@@ -258,20 +258,20 @@ func (c *Client) deletehttpRequest(path, method string, body bytes.Buffer) (clos
 	}
 	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
 		return resp.Body, nil
-    } else {
+	} else {
 		var data map[string]interface{}
 		newbody, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			log.Println("[ERROR]: ",err)
+			log.Println("[ERROR]: ", err)
 			return nil, err
 		}
 		err = json.Unmarshal([]byte(newbody), &data)
 		if err != nil {
-			log.Println("[ERROR]: ",err)
+			log.Println("[ERROR]: ", err)
 			return nil, err
 		}
-		return nil, fmt.Errorf("%v, STATUSCODE = %v",data["message"],resp.StatusCode)
-    }
+		return nil, fmt.Errorf("%v, STATUSCODE = %v", data["message"], resp.StatusCode)
+	}
 }
 
 func (c *Client) DeactivateUser(userId string, status string) error {
@@ -281,40 +281,40 @@ func (c *Client) DeactivateUser(userId string, status string) error {
 	payload := strings.NewReader(data)
 	req, err := http.NewRequest("PUT", url, payload)
 	if err != nil {
-		log.Println("[DEACTIVATE/ACTIVATE ERROR]: ",err)
+		log.Println("[DEACTIVATE/ACTIVATE ERROR]: ", err)
 		return nil
 	}
-	authtoken := "Bearer "+c.authToken
+	authtoken := "Bearer " + c.authToken
 	req.Header.Add("content-type", "application/json")
 	req.Header.Add("authorization", authtoken)
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		log.Println("[DEACTIVATE/ACTIVATE ERROR]: ",err)
+		log.Println("[DEACTIVATE/ACTIVATE ERROR]: ", err)
 		return nil
 	}
 	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
 		return nil
-    } else {
+	} else {
 		var newdata map[string]interface{}
 		newbody, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			log.Println("[ERROR]: ",err)
+			log.Println("[ERROR]: ", err)
 			return err
 		}
 		err = json.Unmarshal([]byte(newbody), &data)
 		if err != nil {
-			log.Println("[ERROR]: ",err)
+			log.Println("[ERROR]: ", err)
 			return err
 		}
 		log.Println("[DEACTIVATE/ACTIVATE ERROR]")
-		return fmt.Errorf("%v, STATUSCODE = %v",newdata["message"],resp.StatusCode)
-    }
-	
+		return fmt.Errorf("%v, STATUSCODE = %v", newdata["message"], resp.StatusCode)
+	}
+
 }
 
 func (c *Client) IsRetry(err error) bool {
 	if err != nil {
-		if strings.Contains(err.Error(), "429")==true {
+		if strings.Contains(err.Error(), "429") == true {
 			return true
 		}
 	}

@@ -1,6 +1,6 @@
 package zoom
 
-import(
+import (
 	"fmt"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"testing"
@@ -8,8 +8,8 @@ import(
 
 func TestAccItem_Basic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckItemBasic(),
@@ -36,8 +36,8 @@ resource "zoom_user" "user1" {
 
 func TestAccItem_Update(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckItemUpdatePre(),
@@ -47,7 +47,7 @@ func TestAccItem_Update(t *testing.T) {
 					resource.TestCheckResourceAttr(
 						"zoom_user.user1", "first_name", "FirstName"),
 					resource.TestCheckResourceAttr(
-						"zoom_user.user1", "last_name", "LastName"),	
+						"zoom_user.user1", "last_name", "LastName"),
 				),
 			},
 			{
