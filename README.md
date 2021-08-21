@@ -130,7 +130,7 @@ output "user1" {
 
 * `zoom_api_key`(Required,string)     - The Zoom API Key. This may also be set via the `"ZOOM_API_KEY"` environment variable.
 * `zoom_api_secret`(Required,string)  - The Zoom API Secret. This may also be set via the `"ZOOM_API_SECRET"` environment variable.
-* `timeout_minutes` (Optional,int)    - Timeout for API calls. This may also be set via the `"ZOOM_TIMEOUT_MINUTES"` environment variable.
+* `timeout_minutes` (Optional,int)    - The duration for which need to rerun API calls whenever API Rate limit error is occurred. This may also be set via the `"ZOOM_TIMEOUT_MINUTES"` environment variable.
 * `email`(Required,string)            - The email id associated with the user account.
 * `first_name`(Required,string)       - First name of the User.
 * `last_name`(Required,string)        - Last Name / Family Name / Surname of the User.
