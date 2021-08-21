@@ -124,7 +124,7 @@ func resourceUserCreate(ctx context.Context, d *schema.ResourceData, m interface
 	}
 
 	var err error
-	retryErr := resource.Retry(2*time.Minute, func() *resource.RetryError {
+	retryErr := resource.Retry(time.Duration(apiClient.TimeoutMinutes)*time.Minute, func() *resource.RetryError {
 		if err = apiClient.NewItem(&user); err != nil {
 			if apiClient.IsRetry(err) {
 				return resource.RetryableError(err)
@@ -152,7 +152,7 @@ func resourceUserRead(ctx context.Context, d *schema.ResourceData, m interface{}
 	apiClient := m.(*client.Client)
 	userId := d.Id()
 
-	retryErr := resource.Retry(2*time.Minute, func() *resource.RetryError {
+	retryErr := resource.Retry(time.Duration(apiClient.TimeoutMinutes)*time.Minute, func() *resource.RetryError {
 		user, err := apiClient.GetItem(userId)
 		if err != nil {
 			if apiClient.IsRetry(err) {
@@ -215,7 +215,7 @@ func resourceUserUpdate(ctx context.Context, d *schema.ResourceData, m interface
 	} else if status == "inactive" {
 		user_status = "deactivate"
 	}
-	retryErrDeac := resource.Retry(2*time.Minute, func() *resource.RetryError {
+	retryErrDeac := resource.Retry(time.Duration(apiClient.TimeoutMinutes)*time.Minute, func() *resource.RetryError {
 		if err_deactivate = apiClient.DeactivateUser(user.Email, user_status); err_deactivate != nil {
 			if apiClient.IsRetry(err_deactivate) {
 				return resource.RetryableError(err_deactivate)
@@ -233,7 +233,7 @@ func resourceUserUpdate(ctx context.Context, d *schema.ResourceData, m interface
 	}
 
 	var err error
-	retryErr := resource.Retry(2*time.Minute, func() *resource.RetryError {
+	retryErr := resource.Retry(time.Duration(apiClient.TimeoutMinutes)*time.Minute, func() *resource.RetryError {
 		if err = apiClient.UpdateItem(&user); err != nil {
 			if apiClient.IsRetry(err) {
 				return resource.RetryableError(err)
@@ -258,7 +258,7 @@ func resourceUserDelete(ctx context.Context, d *schema.ResourceData, m interface
 	userId := d.Id()
 
 	var err error
-	retryErr := resource.Retry(2*time.Minute, func() *resource.RetryError {
+	retryErr := resource.Retry(time.Duration(apiClient.TimeoutMinutes)*time.Minute, func() *resource.RetryError {
 		if err = apiClient.DeleteItem(userId); err != nil {
 			if apiClient.IsRetry(err) {
 				return resource.RetryableError(err)

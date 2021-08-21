@@ -19,6 +19,11 @@ func Provider() *schema.Provider {
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("ZOOM_API_KEY", ""),
 			},
+			"timeout_minutes": &schema.Schema{
+				Type:        schema.TypeInt,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("ZOOM_TIMEOUT_MINUTES", "2"),
+			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"zoom_user": resourceUser(),
@@ -32,5 +37,5 @@ func Provider() *schema.Provider {
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	token := tkn.TokenGenerate(d.Get("zoom_api_secret").(string), d.Get("zoom_api_key").(string))
-	return client.NewClient(token), nil
+	return client.NewClient(token, d.Get("timeout_minutes").(int)), nil
 }

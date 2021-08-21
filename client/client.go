@@ -60,12 +60,14 @@ func init() {
 
 type Client struct {
 	authToken  string
+	TimeoutMinutes    int
 	httpClient *http.Client
 }
 
-func NewClient(token string) *Client {
+func NewClient(token string, timeoutMinutes int) *Client {
 	return &Client{
 		authToken:  token,
+		TimeoutMinutes: timeoutMinutes,
 		httpClient: &http.Client{},
 	}
 }
