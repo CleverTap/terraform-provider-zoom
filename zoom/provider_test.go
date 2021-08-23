@@ -11,8 +11,6 @@ var testAccProviders map[string]*schema.Provider
 var testAccProvider *schema.Provider
 
 func init() {
-	os.Setenv("ZOOM_API_SECRET", "DEMO_VALUE")
-	os.Setenv("ZOOM_API_KEY", "DEMO_VALUE")
 	testAccProvider = Provider()
 	testAccProviders = map[string]*schema.Provider{
 		"zoom": testAccProvider,

@@ -1,10 +1,8 @@
 package client
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -12,74 +10,58 @@ import (
 )
 
 type User struct {
-	Id         string `json:"id"`
-	Email      string `json:"email"`
-	FirstName  string `json:"first_name"`
-	LastName   string `json:"last_name"`
-	Status     string `json:"status"`
-	Type       int    `json:"type"`
-	Pmi        int    `json:"pmi"`
-	RoleName   string `json:"role_name"`
-	Department string `json:"dept"`
-	JobTitle   string `json:"job_title"`
-	Location   string `json:"location"`
+	Email          string        `json:"email,omitempty"`
+	FirstName      string        `json:"first_name,omitempty"`
+	LastName       string        `json:"last_name,omitempty"`
+	Status         string        `json:"status,omitempty"`
+	Type           int           `json:"type,omitempty"`
+	Pmi            int           `json:"pmi,omitempty"`
+	UsePmi         *bool         `json:"use_pmi,omitempty"`
+	Timezone       string        `json:"timezone,omitempty"`
+	Language       string        `json:"language,omitempty"`
+	VanityName     string        `json:"vanity_name,omitempty"`
+	HostKey        string        `json:"host_key,omitempty"`
+	CmsUserId      string        `json:"cms_user_id,omitempty"`
+	Company        string        `json:"company,omitempty"`
+	GroupId        string        `json:"group_id,omitempty"`
+	Manager        string        `json:"manager,omitempty"`
+	Pronouns       string        `json:"pronouns,omitempty"`
+	PhoneNumbers   []PhoneNumber `json:"phone_numbers,omitempty"`
+	PronounsOption int           `json:"pronouns_option,omitempty"`
+	RoleName       string        `json:"role_name,omitempty"`
+	Department     string        `json:"dept,omitempty"`
+	JobTitle       string        `json:"job_title,omitempty"`
+	Location       string        `json:"location,omitempty"`
 }
 
-type NewUser struct {
-	Action   string   `json:"action"`
-	UserInfo UserInfo `json:"user_info"`
-}
-
-type UserInfo struct {
-	Email     string `json:"email"`
-	Type      int    `json:"type"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-}
-
-type UpdateUser struct {
-	FirstName  string `json:"first_name"`
-	LastName   string `json:"last_name"`
-	Type       int    `json:"type"`
-	Department string `json:"dept"`
-	JobTitle   string `json:"job_title"`
-	Location   string `json:"location"`
-}
-
-var (
-	Errors = make(map[int]string)
-)
-
-func init() {
-	Errors[400] = "Bad Request, StatusCode = 400"
-	Errors[404] = "User Does Not Exist , StatusCode = 404"
-	Errors[409] = "User Already Exist, StatusCode = 409"
-	Errors[401] = "Unauthorized Access, StatusCode = 401"
-	Errors[429] = "User Has Sent Too Many Request, StatusCode = 429"
+type PhoneNumber struct {
+	Country string `json:"country,omitempty"`
+	Code    string `json:"code,omitempty"`
+	Number  string `json:"number,omitempty"`
+	Label   string `json:"label,omitempty"`
 }
 
 type Client struct {
-	authToken  string
-	TimeoutMinutes    int
-	httpClient *http.Client
+	authToken      string
+	TimeoutMinutes int
+	httpClient     *http.Client
 }
 
 func NewClient(token string, timeoutMinutes int) *Client {
 	return &Client{
-		authToken:  token,
+		authToken:      token,
 		TimeoutMinutes: timeoutMinutes,
-		httpClient: &http.Client{},
+		httpClient:     &http.Client{},
 	}
 }
 
-func (c *Client) NewItem(item *User) error {
-	buf := bytes.Buffer{}
-	err := json.NewEncoder(&buf).Encode(item)
+func (c *Client) NewUser(user *User) error {
+	userInfo, err := json.Marshal(user)
 	if err != nil {
-		log.Println("[CREATE ERROR]: ", err)
 		return err
 	}
-	_, err = c.httpRequest("POST", buf, item)
+	body := strings.NewReader(fmt.Sprintf("{\"action\":\"create\",\"user_info\":" + string(userInfo) + "}"))
+	_, err = c.httpRequest("POST", body, "")
 	if err != nil {
 		log.Println("[CREATE ERROR]: ", err)
 		return err
@@ -87,105 +69,28 @@ func (c *Client) NewItem(item *User) error {
 	return nil
 }
 
-func (c *Client) httpRequest(method string, body bytes.Buffer, item *User) (closer io.ReadCloser, err error) {
-	userjson := NewUser{
-		Action: "create",
-		UserInfo: UserInfo{
-			Email:     item.Email,
-			Type:      item.Type,
-			FirstName: item.FirstName,
-			LastName:  item.LastName,
-		},
-	}
-	reqjson, _ := json.Marshal(userjson)
-	payload := strings.NewReader(string(reqjson))
-	req, err := http.NewRequest(method, fmt.Sprintf("%s?access_token=%s", "https://api.zoom.us/v2/users", c.authToken), payload)
-	authtoken := "Bearer " + c.authToken
-	req.Header.Add("Authorization", authtoken)
-	req.Header.Add("Content-Type", "application/json")
-	if err != nil {
-		log.Println("[ERROR]: ", err)
-		return nil, err
-	}
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		log.Println("[ERROR]: ", err)
-		return nil, err
-	}
-	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
-		return resp.Body, nil
-	} else {
-		var data map[string]interface{}
-		newbody, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Println("[ERROR]: ", err)
-			return nil, err
-		}
-		err = json.Unmarshal([]byte(newbody), &data)
-		if err != nil {
-			log.Println("[ERROR]: ", err)
-			return nil, err
-		}
-		return nil, fmt.Errorf("%v, STATUSCODE = %v", data["message"], resp.StatusCode)
-	}
-}
-
-func (c *Client) GetItem(name string) (*User, error) {
-	body, err := c.gethttpRequest(fmt.Sprintf("%v", name), "GET", bytes.Buffer{})
+func (c *Client) GetUser(email string) (*User, error) {
+	body, err := c.httpRequest("GET", &strings.Reader{}, fmt.Sprintf("/%v", email))
 	if err != nil {
 		log.Println("[READ ERROR]: ", err)
 		return nil, err
 	}
-	item := &User{}
-	err = json.NewDecoder(body).Decode(item)
+	user := &User{}
+	err = json.Unmarshal(body, &user)
 	if err != nil {
 		log.Println("[READ ERROR]: ", err)
 		return nil, err
 	}
-	return item, nil
+	return user, nil
 }
 
-func (c *Client) gethttpRequest(emailid, method string, body bytes.Buffer) (closer io.ReadCloser, err error) {
-	req, err := http.NewRequest(method, "https://api.zoom.us/v2/users/"+emailid, &body)
+func (c *Client) UpdateUser(email string, user *User) error {
+	userInfo, err := json.Marshal(user)
 	if err != nil {
-		log.Println("[ERROR]: ", err)
-		return nil, err
-	}
-	authtoken := "Bearer " + c.authToken
-	req.Header.Add("Authorization", authtoken)
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Println("[ERROR]: ", err)
-		return nil, err
-	}
-	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
-		return resp.Body, nil
-	} else {
-		var data map[string]interface{}
-		newbody, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Println("[ERROR]: ", err)
-			return nil, err
-		}
-		err = json.Unmarshal([]byte(newbody), &data)
-		if err != nil {
-			log.Println("[ERROR]: ", err)
-			return nil, err
-		}
-		log.Println("Broken Request")
-		return nil, fmt.Errorf("%v, STATUSCODE = %v", data["message"], resp.StatusCode)
-	}
-}
-
-func (c *Client) UpdateItem(item *User) error {
-	buf := bytes.Buffer{}
-	err := json.NewEncoder(&buf).Encode(item)
-	if err != nil {
-		log.Println("[UPDATE ERROR]: ", err)
 		return err
 	}
-	_, err = c.updatehttpRequest(fmt.Sprintf("%s", item.Email), "PATCH", buf, item)
+	body := strings.NewReader(string(userInfo))
+	_, err = c.httpRequest("PATCH", body, fmt.Sprintf("/%v", email))
 	if err != nil {
 		log.Println("[UPDATE ERROR]: ", err)
 		return err
@@ -193,51 +98,13 @@ func (c *Client) UpdateItem(item *User) error {
 	return nil
 }
 
-func (c *Client) updatehttpRequest(path, method string, body bytes.Buffer, item *User) (closer io.ReadCloser, err error) {
-	updateuserjson := UpdateUser{
-		FirstName:  item.FirstName,
-		LastName:   item.LastName,
-		Type:       item.Type,
-		Department: item.Department,
-		JobTitle:   item.JobTitle,
-		Location:   item.Location,
-	}
-	updatejson, _ := json.Marshal(updateuserjson)
-	payload := strings.NewReader(string(updatejson))
-	req, err := http.NewRequest(method, fmt.Sprintf("%s/%s", "https://api.zoom.us/v2/users", path), payload)
-	authtoken := "Bearer " + c.authToken
-	req.Header.Add("Authorization", authtoken)
-	req.Header.Add("Content-Type", "application/json")
-	if err != nil {
-		log.Println("[ERROR]: ", err)
-		return nil, err
-	}
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		log.Println("[ERROR]: ", err)
-		return nil, err
-	}
-	if resp.StatusCode >= 200 && resp.StatusCode <= 400 {
-		return resp.Body, nil
+func (c *Client) DeleteUser(email, status string) error {
+	var err error
+	if status == "pending" {
+		_, err = c.httpRequest("DELETE", &strings.Reader{}, fmt.Sprintf("/%s", email))
 	} else {
-		var data map[string]interface{}
-		newbody, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Println("[ERROR]: ", err)
-			return nil, err
-		}
-		err = json.Unmarshal([]byte(newbody), &data)
-		if err != nil {
-			log.Println("[ERROR]: ", err)
-			return nil, err
-		}
-		return nil, fmt.Errorf("%v, STATUSCODE = %v", data["message"], resp.StatusCode)
+		_, err = c.httpRequest("DELETE", &strings.Reader{}, fmt.Sprintf("/%s?action=delete", email))
 	}
-
-}
-
-func (c *Client) DeleteItem(userId string) error {
-	_, err := c.deletehttpRequest(fmt.Sprintf("%s?action=delete", userId), "DELETE", bytes.Buffer{})
 	if err != nil {
 		log.Println("[DELETE ERROR]: ", err)
 		return err
@@ -245,73 +112,49 @@ func (c *Client) DeleteItem(userId string) error {
 	return nil
 }
 
-func (c *Client) deletehttpRequest(path, method string, body bytes.Buffer) (closer io.ReadCloser, err error) {
-	req, err := http.NewRequest(method, fmt.Sprintf("%s/%s", "https://api.zoom.us/v2/users", path), &body)
+func (c *Client) ChangeUserStatus(email, action string) error {
+	action = fmt.Sprintf("{\"action\":\"%s\"}", action)
+	body := strings.NewReader(action)
+	_, err := c.httpRequest("PUT", body, fmt.Sprintf("/%s/status", email))
 	if err != nil {
-		log.Println("[DELETE ERROR]: ", err)
+		log.Println("[DEACTIVATE/ACTIVATE ERROR]: ", err)
+		return err
+	}
+	return nil
+}
+
+func (c *Client) ChangeEmail(oldEmail, newEmail string) error {
+	body := strings.NewReader(fmt.Sprintf("{\"email\":\"" + newEmail + "\"}"))
+	_, err := c.httpRequest("PUT", body, fmt.Sprintf("/%v/email", oldEmail))
+	if err != nil {
+		log.Println("[UPDATE ERROR]: ", err)
+		return err
+	}
+	return nil
+}
+
+func (c *Client) httpRequest(method string, body *strings.Reader, path string) ([]byte, error) {
+	req, err := http.NewRequest(method, fmt.Sprintf("https://api.zoom.us/v2/users"+path), body)
+	if err != nil {
+		log.Println("[ERROR]: ", err)
 		return nil, err
 	}
 	authtoken := "Bearer " + c.authToken
 	req.Header.Add("Authorization", authtoken)
+	req.Header.Add("Content-Type", "application/json")
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		log.Println("[DELETE ERROR]: ", err)
+		log.Println("[ERROR]: ", err)
+		return nil, err
+	}
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
 		return nil, err
 	}
 	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
-		return resp.Body, nil
-	} else {
-		var data map[string]interface{}
-		newbody, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Println("[ERROR]: ", err)
-			return nil, err
-		}
-		err = json.Unmarshal([]byte(newbody), &data)
-		if err != nil {
-			log.Println("[ERROR]: ", err)
-			return nil, err
-		}
-		return nil, fmt.Errorf("%v, STATUSCODE = %v", data["message"], resp.StatusCode)
+		return respBody, nil
 	}
-}
-
-func (c *Client) DeactivateUser(userId string, status string) error {
-	log.Println("Changing Status of User : ", userId)
-	url := fmt.Sprintf("https://api.zoom.us/v2/users/%s/status", userId)
-	data := fmt.Sprintf("{\"action\":\"%s\"}", status)
-	payload := strings.NewReader(data)
-	req, err := http.NewRequest("PUT", url, payload)
-	if err != nil {
-		log.Println("[DEACTIVATE/ACTIVATE ERROR]: ", err)
-		return nil
-	}
-	authtoken := "Bearer " + c.authToken
-	req.Header.Add("content-type", "application/json")
-	req.Header.Add("authorization", authtoken)
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		log.Println("[DEACTIVATE/ACTIVATE ERROR]: ", err)
-		return nil
-	}
-	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
-		return nil
-	} else {
-		var newdata map[string]interface{}
-		newbody, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Println("[ERROR]: ", err)
-			return err
-		}
-		err = json.Unmarshal([]byte(newbody), &data)
-		if err != nil {
-			log.Println("[ERROR]: ", err)
-			return err
-		}
-		log.Println("[DEACTIVATE/ACTIVATE ERROR]")
-		return fmt.Errorf("%v, STATUSCODE = %v", newdata["message"], resp.StatusCode)
-	}
-
+	return nil, fmt.Errorf(string(respBody) + fmt.Sprintf(", StatusCode: %v", resp.StatusCode))
 }
 
 func (c *Client) IsRetry(err error) bool {

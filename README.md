@@ -94,7 +94,7 @@ Delete the `resource` block of the user and run `terraform apply`.
 terraform {
   required_providers {
     zoom = {
-      version = "1.0.3"
+      version >= "1.0.3"
       source  = "CleverTap/zoom"
     }
   }
@@ -107,18 +107,18 @@ provider "zoom" {
 }
 
 resource "zoom_user" "user1" {
-   email      = "useremail@domain.com"
-   first_name = "Dummyfirst"
-   last_name  = "Dummylast"
-   status = "active"
-   license_type = 1
-   department = "DevOps"
-   job_title = "Engineer"
-   location   =  "India"
+  email      = "useremail@domain.com"
+  first_name = "Dummyfirst"
+  last_name  = "Dummylast"
+  status = "active"
+  license_type = 1
+  department = "DevOps"
+  job_title = "Engineer"
+  location   =  "India"
 }
 
 data "zoom_user" "user1" {
-  id = "user@domain.com"
+  email = "user@domain.com"
 }
 
 output "user1" {
@@ -128,20 +128,31 @@ output "user1" {
 
 ## Argument Reference
 
-* `zoom_api_key`(Required,string)     - The Zoom API Key. This may also be set via the `"ZOOM_API_KEY"` environment variable.
-* `zoom_api_secret`(Required,string)  - The Zoom API Secret. This may also be set via the `"ZOOM_API_SECRET"` environment variable.
-* `timeout_minutes` (Optional,int)    - The duration for which retries to be performed when an API request fails with API Rate limit error. This may also be set via the `"ZOOM_TIMEOUT_MINUTES"` environment variable. Default value is 2.
-* `email`(Required,string)            - The email id associated with the user account.
-* `first_name`(Required,string)       - First name of the User.
-* `last_name`(Required,string)        - Last Name / Family Name / Surname of the User.
-* `status`(Optional,string)           - User account activation status ie.(active, inactive).
-* `license_type`(Required,integer)    - User account type ie.(1=Basic, 2=License, 3=On-prem)
-* `job_title`(Optional,string)        - Job title of the particular user.
-* `department`(Optional,string)       - Department of the particular user.
-* `location`(Optional,string)         - Department of the particular user.
-* `id`(Computed,string)               - Unique ID of the User which is same as Email ID.
-* `pmi`(Computed,integer)             - Generated pmi number of the user.
-* `role_name`(Computed,string)        - Current role of the user ie.(Admin,Member).
+* `zoom_api_key`(Required, string)     - The Zoom API Key. This may also be set via the `"ZOOM_API_KEY"` environment variable.
+* `zoom_api_secret`(Required, string)  - The Zoom API Secret. This may also be set via the `"ZOOM_API_SECRET"` environment variable.
+* `timeout_minutes` (Optional, int)    - The duration for which retries to be performed when an API request fails with API Rate limit error. This may also be set via the `"ZOOM_TIMEOUT_MINUTES"` environment variable. Default value is 2.
+* `email`(Required, string)            - The email id associated with the user account.
+* `first_name`(Required, string)       - First name of the User.
+* `last_name`(Required, string)        - Last Name / Family Name / Surname of the User.
+* `status`(Optional, string)           - User account activation status i.e., `active`, `inactive`.
+* `license_type`(Required, integer)    - User account type i.e.,(1=Basic, 2=License, 3=On-prem)
+* `company` (Optional, string)         - User's company
+* `job_title`(Optional, string)        - Job title of the particular user.
+* `department`(Optional, string)       - Department of the particular user.
+* `location`(Optional, string)         - Department of the particular user.
+* `pmi`(Optional, integer)             - Personal Meeting ID of the user.
+* `use_pmi`(Optional, bool)            - If true means use PMI for instant meetings.
+* `timezone`(Optional, string)         - Time zone ID of user. For values refer [here](https://marketplace.zoom.us/docs/api-reference/other-references/abbreviation-lists#timezones).
+* `vanity_name`(Optional, string)      - Personal Meeting Room Name.
+* `host_key`(Optional, string)         - Host Key of user.
+* `group_id`(Optional, string)         - Unique identifier of group to which user to be added.
+* `manager`(Optional, string)          - Name or Email of Manager of the User.
+* `phone_numbers`(Optional, set of maps) - Maps contain keys code, country, number, label.
+* `language`(Optional, string)         - Language of User.
+* `cms_user_id`(Optional, string)      - CMS User ID of User. 
+* `pronouns`(Optional, string)         - User's pronouns.
+* `pronouns_option`(Optional, int)     - User's display pronouns setting.
+* `role_name`(Computed, string)        - Current role of the user i.e., (Admin,Member).
 
 
 
