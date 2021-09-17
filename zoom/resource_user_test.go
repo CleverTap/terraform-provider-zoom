@@ -1,18 +1,18 @@
 package zoom
 
-import(
+import (
 	"fmt"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"testing"
 )
 
-func TestAccItem_Basic(t *testing.T) {
+func TestAccUser_Basic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckItemBasic(),
+				Config: testAccCheckUserBasic(),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("zoom_user.user1", "email", "user@gmail.com"),
 					resource.TestCheckResourceAttr("zoom_user.user1", "first_name", "FirstName"),
@@ -23,35 +23,35 @@ func TestAccItem_Basic(t *testing.T) {
 	})
 }
 
-func testAccCheckItemBasic() string {
+func testAccCheckUserBasic() string {
 	return fmt.Sprintf(`
-resource "zoom_user" "user1" {
-      email        = "user@gmail.com"
-      first_name   = "FirstName"
-      last_name    = "LastName"
-      license_type =  1
-    }
-`)
+		resource "zoom_user" "user1" {
+			email        = "user@gmail.com"
+			first_name   = "FirstName"
+			last_name    = "LastName"
+			license_type =  1
+		}
+	`)
 }
 
-func TestAccItem_Update(t *testing.T) {
+func TestAccUser_Update(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckItemUpdatePre(),
+				Config: testAccCheckUserUpdatePre(),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(
 						"zoom_user.user1", "email", "user@gmail.com"),
 					resource.TestCheckResourceAttr(
 						"zoom_user.user1", "first_name", "FirstName"),
 					resource.TestCheckResourceAttr(
-						"zoom_user.user1", "last_name", "LastName"),	
+						"zoom_user.user1", "last_name", "LastName"),
 				),
 			},
 			{
-				Config: testAccCheckItemUpdatePost(),
+				Config: testAccCheckUserUpdatePost(),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(
 						"zoom_user.user1", "email", "user@gmail.com"),
@@ -65,26 +65,26 @@ func TestAccItem_Update(t *testing.T) {
 	})
 }
 
-func testAccCheckItemUpdatePre() string {
+func testAccCheckUserUpdatePre() string {
 	return fmt.Sprintf(`
-resource "zoom_user" "user1" {
-	email        = "user@gmail.com"
-	first_name   = "FirstName"
-	last_name    = "LastName"
-	status       = "activate"
-	license_type =  1
-}
-`)
+		resource "zoom_user" "user1" {
+			email        = "user@gmail.com"
+			first_name   = "FirstName"
+			last_name    = "LastName"
+			status       = "activate"
+			license_type =  1
+		}
+	`)
 }
 
-func testAccCheckItemUpdatePost() string {
+func testAccCheckUserUpdatePost() string {
 	return fmt.Sprintf(`
-resource "zoom_user" "user1" {
-	email        = "user@gmail.com"
-	first_name   = "FirstName"
-	last_name    = "LastName"
-	status       = "activate"
-	license_type =  1
-}
-`)
+		resource "zoom_user" "user1" {
+			email        = "user@gmail.com"
+			first_name   = "FirstName"
+			last_name    = "LastName"
+			status       = "activate"
+			license_type =  1
+		}
+	`)
 }
