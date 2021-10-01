@@ -304,129 +304,130 @@ func resourceUserUpdate(ctx context.Context, d *schema.ResourceData, m interface
 				return diag.FromErr(retryErr)
 			}
 		}
-	}
-	user := client.User{}
-	if d.HasChange("first_name") {
-		if v, ok := d.GetOk("first_name"); ok {
-			user.FirstName = v.(string)
+	} else {
+		user := client.User{}
+		if d.HasChange("first_name") {
+			if v, ok := d.GetOk("first_name"); ok {
+				user.FirstName = v.(string)
+			}
 		}
-	}
-	if d.HasChange("last_name") {
-		if v, ok := d.GetOk("last_name"); ok {
-			user.LastName = v.(string)
+		if d.HasChange("last_name") {
+			if v, ok := d.GetOk("last_name"); ok {
+				user.LastName = v.(string)
+			}
 		}
-	}
-	if d.HasChange("license_type") {
-		if v, ok := d.GetOk("license_type"); ok {
-			user.Type = v.(int)
+		if d.HasChange("license_type") {
+			if v, ok := d.GetOk("license_type"); ok {
+				user.Type = v.(int)
+			}
 		}
-	}
-	if d.HasChange("pmi") {
-		if v, ok := d.GetOk("pmi"); ok {
-			user.Pmi = v.(int)
+		if d.HasChange("pmi") {
+			if v, ok := d.GetOk("pmi"); ok {
+				user.Pmi = v.(int)
+			}
 		}
-	}
-	if d.HasChange("use_pmi") {
-		if v, ok := d.GetOk("use_pmi"); ok {
-			user.UsePmi = v.(*bool)
-		} else {
-			user.UsePmi = v.(*bool)
+		if d.HasChange("use_pmi") {
+			if v, ok := d.GetOk("use_pmi"); ok {
+				user.UsePmi = v.(*bool)
+			} else {
+				user.UsePmi = v.(*bool)
+			}
 		}
-	}
-	if d.HasChange("timezone") {
-		if v, ok := d.GetOk("timezone"); ok {
-			user.Timezone = v.(string)
+		if d.HasChange("timezone") {
+			if v, ok := d.GetOk("timezone"); ok {
+				user.Timezone = v.(string)
+			}
 		}
-	}
-	if d.HasChange("language") {
-		if v, ok := d.GetOk("language"); ok {
-			user.Language = v.(string)
+		if d.HasChange("language") {
+			if v, ok := d.GetOk("language"); ok {
+				user.Language = v.(string)
+			}
 		}
-	}
-	if d.HasChange("vanity_name") {
-		if v, ok := d.GetOk("vanity_name"); ok {
-			user.VanityName = v.(string)
+		if d.HasChange("vanity_name") {
+			if v, ok := d.GetOk("vanity_name"); ok {
+				user.VanityName = v.(string)
+			}
 		}
-	}
-	if d.HasChange("host_key") {
-		if v, ok := d.GetOk("host_key"); ok {
-			user.HostKey = v.(string)
+		if d.HasChange("host_key") {
+			if v, ok := d.GetOk("host_key"); ok {
+				user.HostKey = v.(string)
+			}
 		}
-	}
-	if d.HasChange("cms_user_id") {
-		if v, ok := d.GetOk("cms_user_id"); ok {
-			user.CmsUserId = v.(string)
+		if d.HasChange("cms_user_id") {
+			if v, ok := d.GetOk("cms_user_id"); ok {
+				user.CmsUserId = v.(string)
+			}
 		}
-	}
-	if d.HasChange("company") {
-		if v, ok := d.GetOk("company"); ok {
-			user.Company = v.(string)
+		if d.HasChange("company") {
+			if v, ok := d.GetOk("company"); ok {
+				user.Company = v.(string)
+			}
 		}
-	}
-	if d.HasChange("group_id") {
-		if v, ok := d.GetOk("group_id"); ok {
-			user.GroupId = v.(string)
+		if d.HasChange("group_id") {
+			if v, ok := d.GetOk("group_id"); ok {
+				user.GroupId = v.(string)
+			}
 		}
-	}
-	if d.HasChange("manager") {
-		if v, ok := d.GetOk("manager"); ok {
-			user.Manager = v.(string)
+		if d.HasChange("manager") {
+			if v, ok := d.GetOk("manager"); ok {
+				user.Manager = v.(string)
+			}
 		}
-	}
-	if d.HasChange("pronouns") {
-		if v, ok := d.GetOk("pronouns"); ok {
-			user.Pronouns = v.(string)
+		if d.HasChange("pronouns") {
+			if v, ok := d.GetOk("pronouns"); ok {
+				user.Pronouns = v.(string)
+			}
 		}
-	}
-	if d.HasChange("pronouns_option") {
-		if v, ok := d.GetOk("pronouns_option"); ok {
-			user.PronounsOption = v.(int)
+		if d.HasChange("pronouns_option") {
+			if v, ok := d.GetOk("pronouns_option"); ok {
+				user.PronounsOption = v.(int)
+			}
 		}
-	}
-	if d.HasChange("department") {
-		if v, ok := d.GetOk("department"); ok {
-			user.Department = v.(string)
+		if d.HasChange("department") {
+			if v, ok := d.GetOk("department"); ok {
+				user.Department = v.(string)
+			}
 		}
-	}
-	if d.HasChange("job_title") {
-		if v, ok := d.GetOk("job_title"); ok {
-			user.JobTitle = v.(string)
+		if d.HasChange("job_title") {
+			if v, ok := d.GetOk("job_title"); ok {
+				user.JobTitle = v.(string)
+			}
 		}
-	}
-	if d.HasChange("location") {
-		if v, ok := d.GetOk("location"); ok {
-			user.Location = v.(string)
+		if d.HasChange("location") {
+			if v, ok := d.GetOk("location"); ok {
+				user.Location = v.(string)
+			}
 		}
-	}
-	if d.HasChange("phone_numbers") {
-		if v, ok := d.GetOk("phone_numbers"); ok {
-			phoneNumbers := v.(*schema.Set).List()
-			var phoneNumbersList []client.PhoneNumber
-			for _, v := range phoneNumbers {
-				phoneNumber := v.(map[string]interface{})
-				phoneNumberStruct := client.PhoneNumber{
-					Country: phoneNumber["country"].(string),
-					Code:    phoneNumber["code"].(string),
-					Number:  phoneNumber["number"].(string),
-					Label:   phoneNumber["label"].(string),
+		if d.HasChange("phone_numbers") {
+			if v, ok := d.GetOk("phone_numbers"); ok {
+				phoneNumbers := v.(*schema.Set).List()
+				var phoneNumbersList []client.PhoneNumber
+				for _, v := range phoneNumbers {
+					phoneNumber := v.(map[string]interface{})
+					phoneNumberStruct := client.PhoneNumber{
+						Country: phoneNumber["country"].(string),
+						Code:    phoneNumber["code"].(string),
+						Number:  phoneNumber["number"].(string),
+						Label:   phoneNumber["label"].(string),
+					}
+					phoneNumbersList = append(phoneNumbersList, phoneNumberStruct)
 				}
-				phoneNumbersList = append(phoneNumbersList, phoneNumberStruct)
+				user.PhoneNumbers = phoneNumbersList
 			}
-			user.PhoneNumbers = phoneNumbersList
 		}
-	}
-	retryErr := resource.Retry(time.Duration(apiClient.TimeoutMinutes)*time.Minute, func() *resource.RetryError {
-		if err := apiClient.UpdateUser(d.Id(), &user); err != nil {
-			if apiClient.IsRetry(err) {
-				return resource.RetryableError(err)
+		retryErr := resource.Retry(time.Duration(apiClient.TimeoutMinutes)*time.Minute, func() *resource.RetryError {
+			if err := apiClient.UpdateUser(d.Id(), &user); err != nil {
+				if apiClient.IsRetry(err) {
+					return resource.RetryableError(err)
+				}
+				return resource.NonRetryableError(err)
 			}
-			return resource.NonRetryableError(err)
+			return nil
+		})
+		if retryErr != nil {
+			time.Sleep(2 * time.Second)
+			return diag.FromErr(retryErr)
 		}
-		return nil
-	})
-	if retryErr != nil {
-		time.Sleep(2 * time.Second)
-		return diag.FromErr(retryErr)
 	}
 	return diags
 }
