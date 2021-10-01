@@ -114,7 +114,6 @@ func (c *Client) DeleteUser(email, status string) error {
 
 func (c *Client) ChangeUserStatus(email, action string) error {
 	action = fmt.Sprintf("{\"action\":\"%s\"}", action)
-	log.Println("Change User Status")
 	body := strings.NewReader(action)
 	_, err := c.httpRequest("PUT", body, fmt.Sprintf("/%s/status", email))
 	if err != nil {
@@ -160,7 +159,7 @@ func (c *Client) httpRequest(method string, body *strings.Reader, path string) (
 
 func (c *Client) IsRetry(err error) bool {
 	if err != nil {
-		if strings.Contains(err.Error(), "StatusCode: 429") == true {
+		if strings.Contains(err.Error(), "429") == true {
 			return true
 		}
 	}
